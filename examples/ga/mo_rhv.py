@@ -27,7 +27,7 @@ from deap import algorithms
 from deap import base
 from deap import benchmarks
 from deap.benchmarks.tools import diversity, convergence, hypervolume
-from deap.tools.indicator import hv
+import moocore
 from deap import creator
 from deap import tools
 
@@ -69,12 +69,12 @@ def hypervolume_contrib(front, **kargs):
     if ref is None:
         ref = numpy.max(wobj, axis=0) + 1
 
-    total_hv = hv.hypervolume(wobj, ref)
+    total_hv = moocore.hypervolume(wobj, ref=ref)
 
     def contribution(i):
         # The contribution of point p_i in point set P
         # is the hypervolume of P without p_i
-        return total_hv - hv.hypervolume(numpy.concatenate((wobj[:i], wobj[i+1:])), ref)
+        return total_hv - moocore.hypervolume(numpy.concatenate((wobj[:i], wobj[i+1:])), ref=ref)
 
     # Parallelization note: Cannot pickle local function
     return map(contribution, range(len(front)))

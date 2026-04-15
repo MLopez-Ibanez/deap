@@ -16,11 +16,10 @@ except ImportError:
     scipy_imported = False
 
 try:
-    # try importing the C version
-    from ..tools._hypervolume import hv
+    import moocore
+    moocore_imported = True
 except ImportError:
-    # fallback on python version
-    from ..tools._hypervolume import pyhv as hv
+    moocore_imported = False
 
 
 class translate(object):
@@ -307,15 +306,21 @@ def hypervolume(front, ref=None):
     """Return the hypervolume of a *front*. If the *ref* point is not
     given, the worst value for each objective +1 is used.
 
+    The hypervolume is computed using the `moocore` package. See
+    `moocore.hypervolume <https://multi-objective.github.io/moocore/python/reference/generated/moocore.hypervolume.html>`_
+    for details.
+
     :param front: The population (usually a list of undominated individuals)
                   on which to compute the hypervolume.
     :param ref: A point of the same dimensionality as the individuals in *front*.
     """
+    if not moocore_imported:
+        raise ImportError("hypervolume requires the moocore module")
     # Must use wvalues * -1 since hypervolume use implicit minimization
     wobj = numpy.array([ind.fitness.wvalues for ind in front]) * -1
     if ref is None:
         ref = numpy.max(wobj, axis=0) + 1
-    return hv.hypervolume(wobj, ref)
+    return moocore.hypervolume(wobj, ref=ref)
 
 
 def igd(A, Z):
