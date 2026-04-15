@@ -15,11 +15,7 @@ try:
 except ImportError:
     scipy_imported = False
 
-try:
-    import moocore
-    moocore_imported = True
-except ImportError:
-    moocore_imported = False
+import moocore
 
 
 class translate(object):
@@ -314,8 +310,6 @@ def hypervolume(front, ref=None):
                   on which to compute the hypervolume.
     :param ref: A point of the same dimensionality as the individuals in *front*.
     """
-    if not moocore_imported:
-        raise ImportError("hypervolume requires the moocore module")
     # Must use wvalues * -1 since hypervolume use implicit minimization
     wobj = numpy.array([ind.fitness.wvalues for ind in front]) * -1
     if ref is None:
